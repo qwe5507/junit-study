@@ -3,12 +3,13 @@ package com.example.junit.domain;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import javax.persistence.*;
 
 @NoArgsConstructor
 @Getter
-@Entity
+@Entity @ToString
 public class Book {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
