@@ -1,15 +1,14 @@
 package com.example.junit.domain;
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.context.jdbc.Sql;
 
 import java.util.List;
+import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest // DB와 관련된 컴포넌트만 메모리에 로딩
 public class BookRepositoryTest {
@@ -32,7 +31,13 @@ public class BookRepositoryTest {
     // @BeforeEach는 아래와 같이 트랜잭션의 범위가 된다.
     // [데이터준비() + 1 책등록] (T), [데이터준비() + 2 책목록보기] (T) -> 사이즈 1
 
+    // 트랜잭션이 종료되어도 auto_increment는 초기화가 안된다.
+    // 해결방법
+    // 1. @AfterEach에서 모든 테스트 끝날때마다 auto increment를 초기화하는 ALTER문 실행
+    // 2. @Sql에 쿼리문 파일 지정해서 해당 테스트 시작할때 마다 쿼리문 실행
+
     // 1. 책 등록
+    @Order(1) // @TEST 메서드는 순서보장이 안되기 때문에 순서보장이 필요하면 @Order()로 순서 지정
     @Test
     public void 책등록_test() {
         // given (데이터 준비)
@@ -68,6 +73,7 @@ public class BookRepositoryTest {
     }
 
     // 3. 책 한권 보기
+    @Sql("classpath:db/tableInit.sql") // 해당 메서드가 실행되기 직전에 실행 된다.
     @Test
     public void 책한권보기_test() {
         //given
@@ -77,7 +83,7 @@ public class BookRepositoryTest {
         //when
         System.out.println("size : " + bookRepository.findAll().size());
 
-        Book bookPS = bookRepository.findById(4L).get(); // ID가 다를수 있으므로 조심해야 함
+        Book bookPS = bookRepository.findById(1L).get();
 
         System.out.println("size : " + bookRepository.findAll().size());
 
@@ -86,8 +92,22 @@ public class BookRepositoryTest {
         assertEquals(author, bookPS.getAuthor());
     }
 
-    // 4. 책 수정
+    // 4. 책 삭제
+    @Sql("classpath:db/tableInit.sql") // 해당 메서드가 실행되기 직전에 실행 된다.
+    @Test
+    public void 책삭제_test() {
+        // given
+        Long id = 1L;
 
-    // 5. 책 삭제
+        // when
+        bookRepository.deleteById(id);
+
+        // then
+        //삭제 후 거래가 있으면 테스트 실패
+        assertFalse(bookRepository.findById(id).isPresent());
+    }
+
+    // 5. 책 수정
+
 
 }
