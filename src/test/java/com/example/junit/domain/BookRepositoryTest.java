@@ -107,7 +107,31 @@ public class BookRepositoryTest {
         assertFalse(bookRepository.findById(id).isPresent());
     }
 
+    // 1. junit5, lela
     // 5. 책 수정
+    @Sql("classpath:db/tableInit.sql") // 해당 메서드가 실행되기 직전에 실행 된다.
+    @Test
+    public void 책수정_test() {
+        // given
+        Long id = 1L;
+        String title = "junit77";
+        String author = "norma";
+        Book book = new Book(id, title, author);
 
+        // when
+        // id가 있기 때문에 insert가 아닌  update
+        Book bookPS = bookRepository.save(book);
+
+//        bookRepository.findAll().stream()
+//                .forEach(books ->{
+//                    System.out.println(books.toString());
+//                    System.out.println("===================");
+//                });
+
+        // then
+        assertEquals(id, bookPS.getId());
+        assertEquals(title, bookPS.getTitle());
+        assertEquals(author, bookPS.getAuthor());
+    }
 
 }
