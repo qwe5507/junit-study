@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -40,6 +39,12 @@ public class BookService {
     }
 
     // 4. 책 삭제
+    @Transactional(rollbackFor = RuntimeException.class)
+    public void 책삭제하기(Long id) {
+        bookRepository.deleteById(id);
+        // 삭제할 id를 못찾았다고 DB에서 오류가 발생하진 않지만,
+        // Spring에서 IllegalArgumentException를 발생시킴.
+    }
 
     // 5. 책 수정
 
