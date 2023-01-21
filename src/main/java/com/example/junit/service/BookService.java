@@ -41,7 +41,9 @@ public class BookService {
 //                .map((bookPS) -> new BookResponseDto().toDto(bookPS))
                 // 2. 비 정상 new는 한번만 실행되고, toDto가 여러번 실행 되는 거임
 //                .map(new BookResponseDto()::toDto)
-                .map(Book::toDto)  // 3
+                // 3.
+                .map(Book::toDto)
+                // .map((bookPS) -> bookPS.toDto()) 이것과 같음
                 .collect(Collectors.toList());
         // 2번은 아래 코드와 동일한 거임.
         //        BookResponseDto responseDto = new BookResponseDto();
