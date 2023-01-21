@@ -50,11 +50,11 @@ public class BookServiceTest {
     @Test
     public void 책목록보기_테스트() {
         // given
-
-        // stub
         List<Book> books = new ArrayList<>();
         books.add(new Book(1L, "junit강의", "겟인데어"));
         books.add(new Book(2L, "DDD", "이진강"));
+
+        // stub
         when(bookRepository.findAll()).thenReturn(books);
 
         // when

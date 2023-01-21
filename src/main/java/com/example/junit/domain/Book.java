@@ -1,5 +1,6 @@
 package com.example.junit.domain;
 
+import com.example.junit.dto.BookResponseDto;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -28,5 +29,13 @@ public class Book {
     public void update(String title, String author) {
         this.title = title;
         this.author = author;
+    }
+
+    public BookResponseDto toDto() {
+        return BookResponseDto.builder()
+                .id(this.id)
+                .title(this.title)
+                .author(this.author)
+                .build();
     }
 }

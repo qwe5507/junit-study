@@ -31,21 +31,32 @@ public class BookService {
             }
         }
 
-        return new BookResponseDto().toDto(bookPS);
+        return bookPS.toDto();
     }
 
     // 2. 책 목록 보기
     public List<BookResponseDto> 책목록보기() {
         return bookRepository.findAll().stream()
-                .map((bookPS) -> new BookResponseDto().toDto(bookPS))
+                // 1. 정상, new가 두 번 실행 된다.
+//                .map((bookPS) -> new BookResponseDto().toDto(bookPS))
+                // 2. 비 정상 new는 한번만 실행되고, toDto가 여러번 실행 되는 거임
+//                .map(new BookResponseDto()::toDto)
+                .map(Book::toDto)  // 3
                 .collect(Collectors.toList());
+        // 2번은 아래 코드와 동일한 거임.
+        //        BookResponseDto responseDto = new BookResponseDto();
+//        return bookRepository.findAll().stream()
+//                .map((bookPS) -> responseDto.toDto(bookPS))
+//                .map(responseDto::toDto)
+//                .collect(Collectors.toList());
+
     }
 
     // 3. 책 한권 보기
     public BookResponseDto 책한권보기(Long id) {
-        Book bookOP = bookRepository.findById(id)
+        Book bookPS = bookRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("해당 아이디를 찾을 수 없습니다."));
-        return new BookResponseDto().toDto(bookOP);
+        return bookPS.toDto();
     }
 
     // 4. 책 삭제
