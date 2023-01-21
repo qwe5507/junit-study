@@ -3,6 +3,7 @@ package com.example.junit.domain;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.jdbc.Sql;
 
 import java.util.List;
@@ -39,6 +40,7 @@ public class BookRepositoryTest {
     // 1. 책 등록
     @Order(1) // @TEST 메서드는 순서보장이 안되기 때문에 순서보장이 필요하면 @Order()로 순서 지정
     @Test
+//    @Rollback(value = false) // defualt가 롤백인데, 이 옵션으로 롤백 안되게 할 수 있음.
     public void 책등록_test() {
         // given (데이터 준비)
         String title = "junit5";
@@ -74,6 +76,7 @@ public class BookRepositoryTest {
 
     // 3. 책 한권 보기
     @Sql("classpath:db/tableInit.sql") // 해당 메서드가 실행되기 직전에 실행 된다.
+    // 실제 서버에선 id 검증 하기 힘듬, 이 방식처럼 db 날릴수 없기 때문에
     @Test
     public void 책한권보기_test() {
         //given
