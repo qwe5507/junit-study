@@ -8,9 +8,15 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.validation.Valid;
+import java.util.HashMap;
+import java.util.Map;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -21,14 +27,28 @@ public class BookApiController { // 컴포지션 = has 관계
 
     // 1. 책등록
     @PostMapping("/api/v1/book")
-    public ResponseEntity<?> saveBook(@RequestBody BookSaveReqDto bookSaveReqDto) {
+    public ResponseEntity<?> saveBook(@RequestBody @Valid BookSaveReqDto bookSaveReqDto, BindingResult bindingResult) {
         BookResponseDto bookResponseDto = bookService.책등록하기(bookSaveReqDto);
-        CMResDto<?> cmResDto = CMResDto.builder()
+
+        // TODO AOP 처리하는 게 좋음
+        if (bindingResult.hasErrors()) {
+            Map<String, String> errorMap = new HashMap<>();
+
+            for (FieldError fe : bindingResult.getFieldErrors()) {
+                errorMap.put(fe.getField(), fe.getDefaultMessage());
+            }
+            return new ResponseEntity<>(CMResDto.builder()
+                    .code(-1)
+                    .msg(errorMap.toString())
+                    .body(bookResponseDto)
+                    .build(), HttpStatus.BAD_REQUEST);
+        }
+
+        return new ResponseEntity<>(CMResDto.builder()
                 .code(1)
                 .msg("글 저장 성공")
                 .body(bookResponseDto)
-                .build();
-        return new ResponseEntity<>(cmResDto, HttpStatus.CREATED);
+                .build(), HttpStatus.CREATED);
     }
 
     // 2. 책 목록 보기
