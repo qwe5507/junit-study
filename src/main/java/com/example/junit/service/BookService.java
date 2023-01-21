@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -47,5 +48,12 @@ public class BookService {
     }
 
     // 5. 책 수정
+    @Transactional(rollbackFor = RuntimeException.class)
+    public void 책수정하기(Long id, BookSaveReqDto dto) {
+        Book bookPS = bookRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("해당 아이디를 찾을 수 없습니다."));
 
+        bookPS.update(dto.getTitle(), dto.getAuthor());
+        // 더티체킹으로 flush
+    }
 }
