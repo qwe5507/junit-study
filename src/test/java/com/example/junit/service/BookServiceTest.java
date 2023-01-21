@@ -5,7 +5,6 @@ import com.example.junit.domain.BookRepository;
 import com.example.junit.dto.BookResponseDto;
 import com.example.junit.dto.BookSaveReqDto;
 import com.example.junit.util.MailSender;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -13,7 +12,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -119,5 +117,23 @@ public class BookServiceTest {
         //then
         assertThat(bookResponseDto.getTitle()).isEqualTo(dto.getTitle());
         assertThat(bookResponseDto.getAuthor()).isEqualTo(dto.getAuthor());
+    }
+
+    @Test
+    public void 책수정하기_실패_테스트() {
+        // given
+        Long id = 1L;
+        BookSaveReqDto dto = new BookSaveReqDto("spring", "겟인데어");
+
+        // stub
+        Book book = new Book(1L, "junit강의", "메타코딩");
+        when(bookRepository.findById(id)).thenReturn(Optional.empty());
+
+        // when
+        // then
+        assertThatThrownBy(() -> bookService.책수정하기(id, dto))
+                .isInstanceOf(Exception.class) // 부모 타입도 체크
+                .isExactlyInstanceOf(RuntimeException.class) // 정확히 해당 예외만 체크
+                .hasMessageContaining("해당 아이디를 찾을 수 없습니다.");
     }
 }
