@@ -68,14 +68,16 @@ public class BookService {
         // 삭제할 id를 못찾았다고 DB에서 오류가 발생하진 않지만,
         // Spring에서 IllegalArgumentException를 발생시킴.
     }
+    // 책 삭제는 서비스레이어에서 하는일이 없기 떄문에, 테스트코드 필요 없음.
 
     // 5. 책 수정
     @Transactional(rollbackFor = RuntimeException.class)
-    public void 책수정하기(Long id, BookSaveReqDto dto) {
+    public BookResponseDto 책수정하기(Long id, BookSaveReqDto dto) {
         Book bookPS = bookRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("해당 아이디를 찾을 수 없습니다."));
 
         bookPS.update(dto.getTitle(), dto.getAuthor());
         // 더티체킹으로 flush
+        return bookPS.toDto();
     }
 }

@@ -102,4 +102,22 @@ public class BookServiceTest {
                 .isExactlyInstanceOf(RuntimeException.class) // 정확히 해당 예외만 체크
                 .hasMessageContaining("해당 아이디를 찾을 수 없습니다.");
     }
+    @Test
+    public void 책수정하기_테스트() {
+        // given
+        Long id = 1L;
+        BookSaveReqDto dto = new BookSaveReqDto("spring", "겟인데어");
+
+        // stub
+        Book book = new Book(1L, "junit강의", "메타코딩");
+        when(bookRepository.findById(id)).thenReturn(Optional.of(book));
+
+        // when
+        BookResponseDto bookResponseDto = bookService.책수정하기(id, dto);
+        // update가 더티체킹으로 변경되기떄문에 외부에서 확인할 방법이 없어 리턴되게 코드를 변경
+
+        //then
+        assertThat(bookResponseDto.getTitle()).isEqualTo(dto.getTitle());
+        assertThat(bookResponseDto.getAuthor()).isEqualTo(dto.getAuthor());
+    }
 }
