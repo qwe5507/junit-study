@@ -3,9 +3,10 @@ package com.example.junit.dto;
 import com.example.junit.domain.Book;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @NoArgsConstructor
-@Getter
+@Getter @ToString
 public class BookResponseDto {
     private Long id;
     private String title;
