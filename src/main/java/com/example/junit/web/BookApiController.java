@@ -1,8 +1,8 @@
 package com.example.junit.web;
 
-import com.example.junit.dto.response.BookResponseDto;
-import com.example.junit.dto.request.BookSaveReqDto;
-import com.example.junit.dto.response.CMResDto;
+import com.example.junit.web.dto.response.BookResponseDto;
+import com.example.junit.web.dto.request.BookSaveReqDto;
+import com.example.junit.web.dto.response.CMResDto;
 import com.example.junit.service.BookService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

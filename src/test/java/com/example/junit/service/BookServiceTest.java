@@ -2,8 +2,8 @@ package com.example.junit.service;
 
 import com.example.junit.domain.Book;
 import com.example.junit.domain.BookRepository;
-import com.example.junit.dto.response.BookResponseDto;
-import com.example.junit.dto.request.BookSaveReqDto;
+import com.example.junit.web.dto.response.BookResponseDto;
+import com.example.junit.web.dto.request.BookSaveReqDto;
 import com.example.junit.util.MailSender;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

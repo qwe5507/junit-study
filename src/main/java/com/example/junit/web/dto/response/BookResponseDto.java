@@ -1,6 +1,5 @@
-package com.example.junit.dto.response;
+package com.example.junit.web.dto.response;
 
-import com.example.junit.domain.Book;
 import lombok.*;
 
 @NoArgsConstructor

@@ -1,4 +1,4 @@
-package com.example.junit.dto.request;
+package com.example.junit.web.dto.request;
 
 import com.example.junit.domain.Book;
 import lombok.AllArgsConstructor;
