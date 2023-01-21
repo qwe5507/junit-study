@@ -1,4 +1,4 @@
-package com.example.junit.dto;
+package com.example.junit.dto.response;
 
 import com.example.junit.domain.Book;
 import lombok.*;

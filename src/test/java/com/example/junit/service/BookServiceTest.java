@@ -2,8 +2,8 @@ package com.example.junit.service;
 
 import com.example.junit.domain.Book;
 import com.example.junit.domain.BookRepository;
-import com.example.junit.dto.BookResponseDto;
-import com.example.junit.dto.BookSaveReqDto;
+import com.example.junit.dto.response.BookResponseDto;
+import com.example.junit.dto.request.BookSaveReqDto;
 import com.example.junit.util.MailSender;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -100,6 +100,7 @@ public class BookServiceTest {
                 .isExactlyInstanceOf(RuntimeException.class) // 정확히 해당 예외만 체크
                 .hasMessageContaining("해당 아이디를 찾을 수 없습니다.");
     }
+
     @Test
     public void 책수정하기_테스트() {
         // given
