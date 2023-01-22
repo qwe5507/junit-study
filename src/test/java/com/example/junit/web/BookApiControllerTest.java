@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.*;
+import org.springframework.test.context.jdbc.Sql;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -84,6 +85,24 @@ public class BookApiControllerTest {
         DocumentContext dc = JsonPath.parse(response.getBody());
         Integer code = dc.read("$.code");
         String title = dc.read("$.body.items[0].title");
+
+        assertThat(1).isEqualTo(code);
+        assertThat("junit5").isEqualTo(title);
+    }
+
+    @Sql("classpath:db/tableInit.sql") // 해당 메서드가 실행되기 직전에 실행 된다.
+    @Test
+    public void getBookOne_test() {
+        // given
+        Long id = 1L;
+        // when
+        HttpEntity<?> request = new HttpEntity<>(headers);
+        ResponseEntity<String> response = rt.exchange("/api/v1/book/" + id, HttpMethod.GET, request, String.class);
+
+        // then
+        DocumentContext dc = JsonPath.parse(response.getBody());
+        Integer code = dc.read("$.code");
+        String title = dc.read("$.body.title");
 
         assertThat(1).isEqualTo(code);
         assertThat("junit5").isEqualTo(title);
