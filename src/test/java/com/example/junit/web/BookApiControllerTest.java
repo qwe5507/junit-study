@@ -74,6 +74,7 @@ public class BookApiControllerTest {
         assertThat(bookSaveReqDto.getAuthor()).isEqualTo(author);
     }
 
+    @Sql("classpath:db/tableInit.sql") // 해당 메서드가 실행되기 직전에 실행 된다.
     @Test
     public void getBookList_test() {
         // given
@@ -106,5 +107,44 @@ public class BookApiControllerTest {
 
         assertThat(1).isEqualTo(code);
         assertThat("junit5").isEqualTo(title);
+    }
+
+    @Sql("classpath:db/tableInit.sql") // 해당 메서드가 실행되기 직전에 실행 된다.
+    @Test
+    public void deleteBook_test() {
+        // given
+        Long id = 1L;
+
+        // when
+        HttpEntity<?> request = new HttpEntity<>(headers);
+        ResponseEntity<String> response = rt.exchange("/api/v1/book/" + id, HttpMethod.DELETE, request, String.class);
+
+        // then
+        DocumentContext dc = JsonPath.parse(response.getBody());
+        Integer code = dc.read("$.code");
+
+        assertThat(1).isEqualTo(code);
+    }
+
+    @Sql("classpath:db/tableInit.sql") // 해당 메서드가 실행되기 직전에 실행 된다.
+    @Test
+    public void updateBook() {
+        // given
+        Long id = 1L;
+        BookSaveReqDto bookSaveReqDto = new BookSaveReqDto("spring", "이진강");
+
+        // when
+        HttpEntity<BookSaveReqDto> request = new HttpEntity<>(bookSaveReqDto, headers);
+        ResponseEntity<String> response = rt.exchange("/api/v1/book/" + id, HttpMethod.PUT, request, String.class);
+
+        // then
+        DocumentContext dc = JsonPath.parse(response.getBody());
+        Integer code = dc.read("$.code");
+        String title = dc.read("$.body.title");
+        String author = dc.read("$.body.author");
+
+        assertThat(1).isEqualTo(code);
+        assertThat(bookSaveReqDto.getTitle()).isEqualTo(title);
+        assertThat(bookSaveReqDto.getAuthor()).isEqualTo(author);
     }
 }
