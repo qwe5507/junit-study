@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.net.BindException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,8 +29,7 @@ public class BookApiController { // 컴포지션 = has 관계
     // 1. 책등록
     @PostMapping("/api/v1/book")
     public ResponseEntity<?> saveBook(@RequestBody @Valid BookSaveReqDto bookSaveReqDto, BindingResult bindingResult) {
-        BookResponseDto bookResponseDto = bookService.책등록하기(bookSaveReqDto);
-
+        log.info("saveBook : {}", bookSaveReqDto.toString());
         // TODO AOP 처리하는 게 좋음
         if (bindingResult.hasErrors()) {
             Map<String, String> errorMap = new HashMap<>();
@@ -37,13 +37,10 @@ public class BookApiController { // 컴포지션 = has 관계
             for (FieldError fe : bindingResult.getFieldErrors()) {
                 errorMap.put(fe.getField(), fe.getDefaultMessage());
             }
-            return new ResponseEntity<>(CMResDto.builder()
-                    .code(-1)
-                    .msg(errorMap.toString())
-                    .body(bookResponseDto)
-                    .build(), HttpStatus.BAD_REQUEST);
+            throw new RuntimeException(errorMap.toString());
         }
 
+        BookResponseDto bookResponseDto = bookService.책등록하기(bookSaveReqDto);
         return new ResponseEntity<>(CMResDto.builder()
                 .code(1)
                 .msg("글 저장 성공")
