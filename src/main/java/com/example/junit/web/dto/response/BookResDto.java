@@ -6,7 +6,7 @@ import lombok.*;
 @AllArgsConstructor
 @Getter @ToString
 @Builder
-public class BookResponseDto {
+public class BookResDto {
     private Long id;
     private String title;
     private String author;

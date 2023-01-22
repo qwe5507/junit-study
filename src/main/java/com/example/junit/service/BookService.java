@@ -2,7 +2,8 @@ package com.example.junit.service;
 
 import com.example.junit.domain.Book;
 import com.example.junit.domain.BookRepository;
-import com.example.junit.web.dto.response.BookResponseDto;
+import com.example.junit.web.dto.response.BookListResDto;
+import com.example.junit.web.dto.response.BookResDto;
 import com.example.junit.web.dto.request.BookSaveReqDto;
 import com.example.junit.util.MailSender;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +22,7 @@ public class BookService {
 
     // 1. 책 등록
     @Transactional(rollbackFor = RuntimeException.class)
-    public BookResponseDto 책등록하기(BookSaveReqDto dto) {
+    public BookResDto 책등록하기(BookSaveReqDto dto) {
         Book bookPS = bookRepository.save(dto.toEntity());
 
         if (bookPS != null) {
@@ -35,8 +36,8 @@ public class BookService {
     }
 
     // 2. 책 목록 보기
-    public List<BookResponseDto> 책목록보기() {
-        return bookRepository.findAll().stream()
+    public BookListResDto 책목록보기() {
+        List<BookResDto> dtos = bookRepository.findAll().stream()
                 // 1. 정상, new가 두 번 실행 된다.
 //                .map((bookPS) -> new BookResponseDto().toDto(bookPS))
                 // 2. 비 정상 new는 한번만 실행되고, toDto가 여러번 실행 되는 거임
@@ -51,11 +52,12 @@ public class BookService {
 //                .map((bookPS) -> responseDto.toDto(bookPS))
 //                .map(responseDto::toDto)
 //                .collect(Collectors.toList());
-
+        BookListResDto bookListResDto = BookListResDto.builder().items(dtos).build();
+        return bookListResDto;
     }
 
     // 3. 책 한권 보기
-    public BookResponseDto 책한권보기(Long id) {
+    public BookResDto 책한권보기(Long id) {
         Book bookPS = bookRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("해당 아이디를 찾을 수 없습니다."));
         return bookPS.toDto();
@@ -72,7 +74,7 @@ public class BookService {
 
     // 5. 책 수정
     @Transactional(rollbackFor = RuntimeException.class)
-    public BookResponseDto 책수정하기(Long id, BookSaveReqDto dto) {
+    public BookResDto 책수정하기(Long id, BookSaveReqDto dto) {
         Book bookPS = bookRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("해당 아이디를 찾을 수 없습니다."));
 

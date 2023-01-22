@@ -2,9 +2,10 @@ package com.example.junit.service;
 
 import com.example.junit.domain.Book;
 import com.example.junit.domain.BookRepository;
-import com.example.junit.web.dto.response.BookResponseDto;
-import com.example.junit.web.dto.request.BookSaveReqDto;
 import com.example.junit.util.MailSender;
+import com.example.junit.web.dto.request.BookSaveReqDto;
+import com.example.junit.web.dto.response.BookListResDto;
+import com.example.junit.web.dto.response.BookResDto;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -15,7 +16,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -40,7 +42,7 @@ public class BookServiceTest {
         when(mailSender.send()).thenReturn(true);
 
         // when
-        BookResponseDto bookResponseDto = bookService.책등록하기(dto);
+        BookResDto bookResponseDto = bookService.책등록하기(dto);
 
         // then
         assertThat(bookResponseDto.getTitle()).isEqualTo(dto.getTitle());
@@ -58,13 +60,13 @@ public class BookServiceTest {
         when(bookRepository.findAll()).thenReturn(books);
 
         // when
-        List<BookResponseDto> bookResponseDtoList = bookService.책목록보기();
+        BookListResDto bookListResDto = bookService.책목록보기();
 
         // then
-        assertThat(bookResponseDtoList.get(0).getTitle()).isEqualTo("junit강의");
-        assertThat(bookResponseDtoList.get(0).getAuthor()).isEqualTo("겟인데어");
-        assertThat(bookResponseDtoList.get(1).getTitle()).isEqualTo("DDD");
-        assertThat(bookResponseDtoList.get(1).getAuthor()).isEqualTo("이진강");
+        assertThat(bookListResDto.getItems().get(0).getTitle()).isEqualTo("junit강의");
+        assertThat(bookListResDto.getItems().get(0).getAuthor()).isEqualTo("겟인데어");
+        assertThat(bookListResDto.getItems().get(1).getTitle()).isEqualTo("DDD");
+        assertThat(bookListResDto.getItems().get(1).getAuthor()).isEqualTo("이진강");
     }
 
     @Test
@@ -77,7 +79,7 @@ public class BookServiceTest {
         when(bookRepository.findById(id)).thenReturn(Optional.of(book));
 
         // when
-        BookResponseDto bookResponseDto = bookService.책한권보기(id);
+        BookResDto bookResponseDto = bookService.책한권보기(id);
 
         // then
         assertThat(bookResponseDto.getTitle()).isEqualTo(book.getTitle());
@@ -112,7 +114,7 @@ public class BookServiceTest {
         when(bookRepository.findById(id)).thenReturn(Optional.of(book));
 
         // when
-        BookResponseDto bookResponseDto = bookService.책수정하기(id, dto);
+        BookResDto bookResponseDto = bookService.책수정하기(id, dto);
         // update가 더티체킹으로 변경되기떄문에 외부에서 확인할 방법이 없어 리턴되게 코드를 변경
 
         //then
