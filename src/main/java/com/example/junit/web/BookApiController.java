@@ -13,6 +13,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
+import javax.naming.Binding;
 import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.Map;
@@ -28,7 +29,7 @@ public class BookApiController { // 컴포지션 = has 관계
     // 1. 책등록
     @PostMapping("/book")
     public ResponseEntity<?> saveBook(@RequestBody @Valid BookSaveReqDto bookSaveReqDto, BindingResult bindingResult) {
-        log.info("saveBook : {}", bookSaveReqDto.toString());
+
         // TODO AOP 처리하는 게 좋음
         if (bindingResult.hasErrors()) {
             Map<String, String> errorMap = new HashMap<>();
@@ -81,7 +82,23 @@ public class BookApiController { // 컴포지션 = has 관계
     }
 
     // 5. 책 수정 하기
-    public ResponseEntity<?> updateBook() {
-        return null;
+    @PutMapping("/book/{id}")
+    public ResponseEntity<?> updateBook(@PathVariable Long id, @RequestBody @Valid BookSaveReqDto bookSaveReqDto, BindingResult bindingResult) {
+
+        // TODO AOP 처리하는 게 좋음
+        if (bindingResult.hasErrors()) {
+            Map<String, String> errorMap = new HashMap<>();
+
+            for (FieldError fe : bindingResult.getFieldErrors()) {
+                errorMap.put(fe.getField(), fe.getDefaultMessage());
+            }
+            throw new RuntimeException(errorMap.toString());
+        }
+        BookResDto bookResDto = bookService.책수정하기(id, bookSaveReqDto);
+        return new ResponseEntity<>(CMResDto.builder()
+                .code(1)
+                .msg("글 수정하기 성공")
+                .body(bookResDto)
+                .build(), HttpStatus.OK);
     }
 }
