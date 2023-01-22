@@ -59,13 +59,25 @@ public class BookApiController { // 컴포지션 = has 관계
     }
 
     // 3. 책 한권 보기
-    public ResponseEntity<?> getBookOne() {
-        return null;
+    @GetMapping("/book/{id}")
+    public ResponseEntity<?> getBookOne(@PathVariable Long id) {
+        BookResDto bookResDto = bookService.책한권보기(id);
+        return new ResponseEntity<>(CMResDto.builder()
+                .code(1)
+                .msg("글 한건보기 성공")
+                .body(bookResDto)
+                .build(), HttpStatus.OK);
     }
 
     // 4. 책 삭제 하기
-    public ResponseEntity<?> deleteBook() {
-        return null;
+    @DeleteMapping("/book/{id}")
+    public ResponseEntity<?> deleteBook(@PathVariable Long id) {
+        bookService.책삭제하기(id);
+        return new ResponseEntity<>(CMResDto.builder()
+                .code(1)
+                .msg("글 삭제하기 성공")
+                .body(null)
+                .build(), HttpStatus.OK);
     }
 
     // 5. 책 수정 하기
