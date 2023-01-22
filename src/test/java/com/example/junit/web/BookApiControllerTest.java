@@ -1,14 +1,15 @@
 package com.example.junit.web;
 
 
-import com.example.junit.service.BookService;
+import com.example.junit.domain.Book;
+import com.example.junit.domain.BookRepository;
 import com.example.junit.web.dto.request.BookSaveReqDto;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -21,19 +22,31 @@ import static org.assertj.core.api.Assertions.assertThat;
 // 컨트롤러만 테스트하는 것이 아님
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class BookApiControllerTest {
-    @Autowired
-    private BookService bookService;
-    @Autowired
-    private TestRestTemplate rt;
-
     private static ObjectMapper objectMapper;
     private static HttpHeaders headers;
+
+    @Autowired
+    private BookRepository bookRepository;
+    @Autowired
+    private TestRestTemplate rt;
 
     @BeforeAll // 테스트 시작 전에 한번만 실행
     public static void init() {
         objectMapper = new ObjectMapper();
         headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
+    }
+
+    @BeforeEach // 각 테스트 시작전에 한번 씩 실행
+    public void 데이터준비() {
+        String title = "junit5";
+        String author = "lela";
+        Book book = Book.builder()
+                .title(title)
+                .author(author)
+                .build();
+        Book saveBook = bookRepository.save(book);
+        System.out.println("saveBook :" + saveBook);
     }
 
     @Test
@@ -48,7 +61,7 @@ public class BookApiControllerTest {
         // when
         HttpEntity<BookSaveReqDto> request = new HttpEntity<>(bookSaveReqDto, headers);
         ResponseEntity<String> response = rt.exchange("/api/v1/book", HttpMethod.POST, request, String.class);
-        //ResponseEntity의 제네릭을 String으로 해줘야 JsonPath가 제대로 인식함.
+        //위의 ResponseEntity의 제네릭을 String으로 해줘야 JsonPath가 제대로 인식함.
         //object로 하면 json을 읽어도 title, author도 object가 된다.
 
         // then
@@ -58,5 +71,21 @@ public class BookApiControllerTest {
 
         assertThat(bookSaveReqDto.getTitle()).isEqualTo(title);
         assertThat(bookSaveReqDto.getAuthor()).isEqualTo(author);
+    }
+
+    @Test
+    public void getBookList_test() {
+        // given
+        // when
+        HttpEntity<?> request = new HttpEntity<>(headers);
+        ResponseEntity<String> response = rt.exchange("/api/v1/book", HttpMethod.GET, request, String.class);
+
+        // then
+        DocumentContext dc = JsonPath.parse(response.getBody());
+        Integer code = dc.read("$.code");
+        String title = dc.read("$.body.items[0].title");
+
+        assertThat(1).isEqualTo(code);
+        assertThat("junit5").isEqualTo(title);
     }
 }
